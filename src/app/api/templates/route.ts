@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 // List templates with plan enforcement
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  let templates = await prisma.template.findMany({ where: { }, orderBy: { createdAt: 'desc' } });
+  // const userId = searchParams.get('userId'); // Unused while plan enforcement is bypassed
+  const templates = await prisma.template.findMany({ where: { }, orderBy: { createdAt: 'desc' } });
   
   // TODO: Temporarily bypass plan enforcement for testing
   /*
