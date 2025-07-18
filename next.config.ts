@@ -22,9 +22,7 @@ const nextConfig: NextConfig = {
     
     return config;
   },
-  experimental: {
-    serverComponentsExternalPackages: ['pdf-parse', 'mammoth']
-  }
+  serverExternalPackages: ['pdf-parse', 'mammoth']
 };
 
 export default nextConfig;
