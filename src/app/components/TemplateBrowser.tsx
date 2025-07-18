@@ -9,7 +9,7 @@ interface Template {
   title: string;
   content: string;
   category: string;
-  createdAt: string;
+  createdAt?: string; // Optional since API might not include it
 }
 
 interface TemplateBrowserProps {
@@ -18,14 +18,7 @@ interface TemplateBrowserProps {
 
 export default function TemplateBrowser({ className = '' }: TemplateBrowserProps) {
   const { data: session } = useSession();
-  const [templates, setTemplates] = useState<Array<{
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    content: string;
-    fields: Record<string, unknown>;
-  }>>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,8 +97,8 @@ export default function TemplateBrowser({ className = '' }: TemplateBrowserProps
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+  const formatDate = (dateString: string | undefined) => {
+    return new Date(dateString || new Date()).toLocaleDateString();
   };
 
   if (!session) {
