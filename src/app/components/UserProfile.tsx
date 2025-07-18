@@ -341,7 +341,7 @@ export default function UserProfile({ className = '' }: UserProfileProps) {
                   </div>
                   <div className="flex items-center">
                     <span className="mr-2 text-blue-600">📄</span>
-                    <span className="text-sm">{user.plan.features.templates || 3} Templates</span>
+                    <span className="text-sm">{(user.plan.features.templates as number) || 3} Templates</span>
                   </div>
                 </div>
               </div>
