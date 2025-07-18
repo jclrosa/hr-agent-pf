@@ -80,7 +80,7 @@ export default function FileUpload({ onFileUploaded, className = '' }: FileUploa
           continue;
         }
 
-        const result = await response.json();
+        await response.json();
         setUploadedFiles(prev => [...prev, file.name]);
         onFileUploaded?.(file.name);
         

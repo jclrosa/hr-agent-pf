@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
   if (!userId || !feature) return NextResponse.json({ error: 'userId and feature required' }, { status: 400 });
   const user = await prisma.user.findUnique({ where: { id: Number(userId) }, include: { plan: true } });
   if (!user || !user.plan) return NextResponse.json({ allowed: false, upgradePlan: featureMap[feature] || 'Self-Serve' });
-  const planFeatures = user.plan.features as any;
-  const allowed = planFeatures[feature] === true || planFeatures[feature] > 0;
-  return NextResponse.json({ allowed, upgradePlan: allowed ? undefined : featureMap[feature] });
+  
+  const planFeatures = user.plan.features as Record<string, unknown>;
+  const allowed = planFeatures[feature] === true || (typeof planFeatures[feature] === 'number' && planFeatures[feature] > 0);
+  return NextResponse.json({ allowed, plan: user.plan.name });
 } 

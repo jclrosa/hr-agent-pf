@@ -11,12 +11,12 @@ export async function GET(req: NextRequest) {
   if (!user || !user.plan || !(user.plan.features as any)?.file_upload) {
     return NextResponse.json({ error: 'File upload requires Self-Serve plan or higher' }, { status: 403 });
   }
-  const files = await prisma.uploadedFile.findMany({ where: { userId: Number(userId) } });
-  const contextParts = files.filter(f => f.content && f.content.trim()).map(f => `--- ${f.filename} ---\n${f.content}\n`);
-  const combinedContext = contextParts.join('\n');
-  return NextResponse.json({
-    file_count: files.length,
-    context: combinedContext,
-    files: files.map(f => ({ filename: f.filename, size: f.content?.length || 0 })),
+  const files = await prisma.uploadedFile.findMany({
+    where: { userId: Number(userId) }
   });
+  const context = files
+    .filter(f => f.content)
+    .map(f => `--- ${f.filename} ---\n${f.content}\n`)
+    .join('\n');
+  return NextResponse.json({ context });
 } 

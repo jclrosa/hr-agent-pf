@@ -55,24 +55,25 @@ export async function POST(req: NextRequest) {
   }
   */
   
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const form = formidable({ multiples: false });
-    form.parse(req as any, async (err: any, fields: any, files: any) => {
+    form.parse(req as any, async (err: Error | null, fields: formidable.Fields, files: formidable.Files) => {
       if (err) return resolve(NextResponse.json({ error: 'File upload error' }, { status: 500 }));
-      const file = files.file;
-      if (!file) return resolve(NextResponse.json({ error: 'No file uploaded' }, { status: 400 }));
+      const fileArray = files.file;
+      if (!fileArray) return resolve(NextResponse.json({ error: 'No file uploaded' }, { status: 400 }));
+      const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
       const content = await parseFile(file);
       // Save file info to DB if userId
       if (userId) {
         await prisma.uploadedFile.create({
           data: {
             userId: Number(userId),
-            filename: file.originalFilename,
+            filename: file.originalFilename || 'unknown',
             content,
           },
         });
       }
-      resolve(NextResponse.json({ file: { filename: file.originalFilename, contentExtracted: !!content } }));
+      resolve(NextResponse.json({ file: { filename: file.originalFilename || 'unknown', contentExtracted: !!content } }));
     });
   });
 }

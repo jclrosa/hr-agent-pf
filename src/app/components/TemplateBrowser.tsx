@@ -18,7 +18,14 @@ interface TemplateBrowserProps {
 
 export default function TemplateBrowser({ className = '' }: TemplateBrowserProps) {
   const { data: session } = useSession();
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<Array<{
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    content: string;
+    fields: Record<string, unknown>;
+  }>>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,8 +66,8 @@ export default function TemplateBrowser({ className = '' }: TemplateBrowserProps
 
         const data = await response.json();
         setTemplates(data.templates || []);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load templates');
+      } catch (error) {
+        console.error('Error fetching templates:', error);
       } finally {
         setLoading(false);
       }

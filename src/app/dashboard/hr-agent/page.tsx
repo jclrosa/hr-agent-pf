@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from 'react-hot-toast';
@@ -134,26 +134,28 @@ export default function HRAgentPage() {
     fetchFileContext();
   };
 
-  const fetchFileContext = async () => {
-    if (!userId) return;
+  const fetchFileContext = useCallback(async () => {
+    if (!session?.user?.email) return '';
     
     try {
       const response = await fetch(`/api/uploads/context?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
-        setFileContext(data.context || '');
+        return data.context || '';
       }
     } catch (error) {
       console.error('Error fetching file context:', error);
     }
-  };
+    return '';
+  }, [session?.user?.email, userId]);
 
-  // Load file context when userId is available
   useEffect(() => {
-    if (userId) {
-      fetchFileContext();
-    }
-  }, [userId]);
+    const loadContext = async () => {
+      const context = await fetchFileContext();
+      setFileContext(context);
+    };
+    loadContext();
+  }, [fetchFileContext]);
 
   if (status === 'loading') {
     return <div className="p-8 text-center">Loading...</div>;

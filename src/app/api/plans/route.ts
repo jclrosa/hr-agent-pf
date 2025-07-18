@@ -13,17 +13,40 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { name, price, features } = body;
-    if (!name || typeof price !== 'number' || !features) {
-      return NextResponse.json({ error: 'name, price, and features are required.' }, { status: 400 });
+  const { name, price, features } = await req.json();
+  let featuresObj: Record<string, unknown> = {};
+  if (features) {
+    try {
+      featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
+    } catch {
+      return NextResponse.json({ error: 'Invalid features format' }, { status: 400 });
     }
-    const plan = await prisma.plan.create({
-      data: { name, price, features },
-    });
-    return NextResponse.json({ plan });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Failed to create plan.' }, { status: 500 });
   }
+  
+  const plan = await prisma.plan.create({
+    data: { name, price: Number(price), features: featuresObj as any },
+  });
+  return NextResponse.json({ plan });
+}
+
+export async function PUT(req: NextRequest) {
+  const { id, name, price, features } = await req.json();
+  let featuresObj: Record<string, unknown> = {};
+  if (features) {
+    try {
+      featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
+    } catch {
+      return NextResponse.json({ error: 'Invalid features format' }, { status: 400 });
+    }
+  }
+
+  const updatedPlan = await prisma.plan.update({
+    where: { id: Number(id) },
+    data: { 
+      name, 
+      price: price ? Number(price) : undefined,
+      features: featuresObj as any
+    },
+  });
+  return NextResponse.json({ plan: updatedPlan });
 } 

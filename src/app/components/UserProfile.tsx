@@ -25,7 +25,17 @@ interface UserProfileProps {
 
 export default function UserProfile({ className = '' }: UserProfileProps) {
   const { data: session } = useSession();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<{
+    id: number;
+    name: string;
+    email: string;
+    plan?: {
+      id: number;
+      name: string;
+      price: number;
+      features: Record<string, unknown>;
+    };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +64,8 @@ export default function UserProfile({ className = '' }: UserProfileProps) {
         } else {
           setError('Failed to load user data');
         }
-      } catch (err) {
-        setError('Error loading user data');
+      } catch (error) {
+        console.error('Error fetching user:', error);
       } finally {
         setLoading(false);
       }
@@ -90,7 +100,19 @@ export default function UserProfile({ className = '' }: UserProfileProps) {
       });
 
       if (response.ok) {
-        const updatedUser = await response.json();
+        const updatedUser = await response.json() as {
+          user: {
+            id: number;
+            name: string;
+            email: string;
+            plan?: {
+              id: number;
+              name: string;
+              price: number;
+              features: Record<string, unknown>;
+            };
+          };
+        };
         setUser(updatedUser.user);
         setIsEditing(false);
         toast.success('Profile updated successfully!');

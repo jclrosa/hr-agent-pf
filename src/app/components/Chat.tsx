@@ -181,7 +181,7 @@ export default function Chat({ className = '' }: ChatProps) {
           <div className="text-center text-gray-500 py-8">
             <div className="mb-4">
               <div className="text-2xl mb-2">👋</div>
-              <p className="text-sm">I'm your HR assistant! I can help with:</p>
+              <p className="text-sm">I&apos;m here to help with your HR questions!</p>
             </div>
             <div className="space-y-2">
               {workflowTriggers.map((trigger, index) => (

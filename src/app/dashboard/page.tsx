@@ -1,73 +1,33 @@
 "use client";
 
 import { useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
-import AuthHeaderButton from '../components/AuthHeaderButton';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Chat from '../components/Chat';
 import FileUpload from '../components/FileUpload';
 import PlanManagement from '../components/PlanManagement';
 
-interface User {
-  id: number;
-  email: string;
-  name: string | null;
-  company: string | null;
-  planId: number | null;
-  plan?: {
+export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('chat');
+  const [user, setUser] = useState<{
     id: number;
     name: string;
-    price: number;
-    features: any;
-  };
-}
-
-export default function Dashboard() {
-  const { data: session, status } = useSession();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('chat');
+    email: string;
+    plan?: {
+      name: string;
+      features: Record<string, unknown>;
+    };
+  } | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!session?.user?.email) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/users?email=${session.user.email}`);
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          // Create user if doesn't exist
-          const createResponse = await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: session.user.email,
-              name: session.user.name || '',
-              company: '',
-            }),
-          });
-          if (createResponse.ok) {
-            const userData = await createResponse.json();
-            setUser(userData.user);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (session) {
-      fetchUserData();
-    } else {
-      setLoading(false);
+    if (status === 'loading') return;
+    if (!session) {
+      router.push('/');
+      return;
     }
-  }, [session]);
+  }, [session, status, router]);
 
   const tabs = [
     { id: 'chat', name: 'AI Assistant', icon: '💬' },
