@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
   */
   
-  return new Promise((resolve) => {
+  return new Promise<NextResponse>((resolve) => {
     const form = formidable({ multiples: false });
     form.parse(req as any, async (err: Error | null, fields: formidable.Fields, files: formidable.Files) => {
       if (err) return resolve(NextResponse.json({ error: 'File upload error' }, { status: 500 }));
