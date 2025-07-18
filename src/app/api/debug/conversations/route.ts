@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getAllConversations } from '@/lib/conversationStore';
 
 export async function GET() {
-  return NextResponse.json({ conversations: getAllConversations() });
+  // Simplified debug endpoint - conversation store temporarily disabled
+  return NextResponse.json({ 
+    message: 'Debug endpoint - conversation store temporarily disabled for build',
+    conversations: {}
+  });
 } 
