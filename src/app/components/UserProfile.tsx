@@ -29,6 +29,8 @@ export default function UserProfile({ className = '' }: UserProfileProps) {
     id: number;
     name: string;
     email: string;
+    company?: string | null;
+    createdAt?: string;
     plan?: {
       id: number;
       name: string;
