@@ -116,14 +116,14 @@ export default function Chat({ className = '' }: ChatProps) {
       // Add assistant response to UI
       const assistantMessage: Message = {
         role: 'assistant',
-        content: data.reply,
+        content: data.response,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Show completion toast if workflow is complete
-      if (data.is_complete) {
-        toast.success('Workflow completed successfully!');
+      // Show success toast for workflow responses
+      if (data.workflow) {
+        toast.success('Workflow response generated successfully!');
       }
 
     } catch (error) {
